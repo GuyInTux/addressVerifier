@@ -1,18 +1,3 @@
-<!-- <template>
-    <div id="app" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <h2>Upload Your Image/ PDF for Verification</h2>
-        <h2 v-if="errorMsg" style="color:red">{{ errorMsg }}</h2>
-        <button @click="onUploadClick" style="margin-top: 20px;margin-bottom: 20px;">Choose File</button>
-        <span>{{ fileName ? fileName : 'No File Chosen' }}</span>
-        <button v-if="fileUrl" @click="removeFile" style="margin-top: 20px;">Remove File</button>
-        <div id="preview" style="width: 500px; height: 750px;">
-          <img v-if="fileType == 'image'" :src="fileUrl" style="margin-top: 30px;max-width: 100%; max-height: 100%;"/>
-          <embed v-else-if="fileType == 'pdf'" :src="fileUrl" type="application/pdf" style="width: 100%; height: 100%;"/>
-        </div>
-        <input type="file" ref="fileUpload" @change="onFileChange" style="display:none">
-    </div>
-</template> -->
-  
 <template>
     <div id="app" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <h2>Upload Your Image/ PDF for Verification</h2>
