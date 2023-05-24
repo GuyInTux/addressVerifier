@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div id="app" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
         <h2>Upload Your Image/ PDF for Verification</h2>
         <h2 v-if="errorMsg" style="color:red">{{ errorMsg }}</h2>
@@ -66,5 +66,115 @@ export default {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     text-align: center;
     margin-top: 60px;
+}
+</style> -->
+<template>
+  <div
+    id="app"
+    style="
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    "
+  >
+    <h2>Upload Your PDF for Verification</h2>
+    <h2 v-if="errorMsg" style="color: red">{{ errorMsg }}</h2>
+    <div style="display: flex; align-items: center">
+      <button
+        @click="onUploadClick"
+        style="margin-top: 20px; margin-bottom: 20px"
+      >
+        Choose File
+      </button>
+      <span style="margin-left: 10px">{{
+        fileName ? fileName : "No File Chosen"
+      }}</span>
+    </div>
+    <button v-if="fileUrl" @click="removeFile" style="margin-top: 20px">
+      Remove File
+    </button>
+    <embed
+      v-if="fileType == 'pdf' && fileUrl"
+      :src="fileUrl"
+      type="application/pdf"
+      style="width: 100%; height: 100%"
+    />
+    <input
+      type="file"
+      ref="fileUpload"
+      @change="onFileChange"
+      style="display: none"
+    />
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      fileUrl: null,
+      fileType: null,
+      errorMsg: null,
+      fileName: null,
+    };
+  },
+  methods: {
+    onUploadClick() {
+      this.errorMsg = null;
+      this.$refs.fileUpload.click();
+    },
+    onFileChange(e) {
+      const file = e.target.files[0];
+      const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+
+      if (file.size > maxSize) {
+        this.errorMsg = "File size exceeds 50MB limit.";
+        this.fileUrl = null;
+        this.fileType = null;
+        this.fileName = null;
+      } else {
+        this.errorMsg = null;
+        this.fileName = file.name;
+
+        const reader = new FileReader();
+        reader.onloadend = (event) => {
+          const contents = event.target.result;
+          const lines = contents.split("\n").slice(0, 50);
+
+          if (lines.some((line) => line.startsWith("%PDF"))) {
+            this.fileUrl = URL.createObjectURL(file);
+            this.fileType = file.type.split("/")[1];
+          } else {
+            this.errorMsg = "File is not a valid PDF.";
+            this.fileUrl = null;
+            this.fileType = null;
+            this.fileName = null;
+          }
+        };
+        reader.onerror = () => {
+          this.errorMsg = "Error reading file.";
+          this.fileUrl = null;
+          this.fileType = null;
+          this.fileName = null;
+        };
+        reader.readAsText(file);
+      }
+    },
+
+    removeFile() {
+      this.fileUrl = null;
+      this.fileType = null;
+      this.fileName = null;
+    },
+  },
+};
+</script>
+
+<style>
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  text-align: center;
+  margin-top: 60px;
 }
 </style>
