@@ -68,6 +68,7 @@ export default {
     margin-top: 60px;
 }
 </style> -->
+
 <template>
   <div
     id="app"
@@ -127,6 +128,7 @@ export default {
     onFileChange(e) {
       const file = e.target.files[0];
       const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+      const acceptedFormats = ["pdf", "png", "webp", "jpg", "jpeg"];
 
       if (file.size > maxSize) {
         this.errorMsg = "File size exceeds 50MB limit.";
@@ -136,29 +138,42 @@ export default {
       } else {
         this.errorMsg = null;
         this.fileName = file.name;
+        const fileType = file.type.split("/")[1];
 
-        const reader = new FileReader();
-        reader.onloadend = (event) => {
-          const contents = event.target.result;
-          const lines = contents.split("\n").slice(0, 50);
-
-          if (lines.some((line) => line.startsWith("%PDF"))) {
-            this.fileUrl = URL.createObjectURL(file);
-            this.fileType = file.type.split("/")[1];
-          } else {
-            this.errorMsg = "File is not a valid PDF.";
+        if (acceptedFormats.includes(fileType)) {
+          const reader = new FileReader();
+          reader.onloadend = (event) => {
+            if (fileType === "pdf") {
+              const contents = event.target.result;
+              const lines = contents.split("\n").slice(0, 50);
+              if (lines.some((line) => line.startsWith("%PDF"))) {
+                this.fileUrl = URL.createObjectURL(file);
+                this.fileType = fileType;
+              } else {
+                this.errorMsg = "File is not a valid PDF.";
+                this.fileUrl = null;
+                this.fileType = null;
+                this.fileName = null;
+              }
+            } else {
+              // If it's an image, we don't need to check the contents.
+              this.fileUrl = URL.createObjectURL(file);
+              this.fileType = fileType;
+            }
+          };
+          reader.onerror = () => {
+            this.errorMsg = "Error reading file.";
             this.fileUrl = null;
             this.fileType = null;
             this.fileName = null;
-          }
-        };
-        reader.onerror = () => {
-          this.errorMsg = "Error reading file.";
+          };
+          reader.readAsText(file);
+        } else {
+          this.errorMsg = "File type is not supported. Please ensure that the file is correctly formatted.";
           this.fileUrl = null;
           this.fileType = null;
           this.fileName = null;
-        };
-        reader.readAsText(file);
+        }
       }
     },
 
