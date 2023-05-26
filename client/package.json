@@ -9,8 +9,12 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
     "file-type": "^18.4.0",
     "node-forge": "^1.3.1",
+    "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^3.6.172",
     "pdfreader": "^3.0.0",
     "vue": "^3.2.13"

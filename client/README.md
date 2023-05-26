@@ -7,7 +7,14 @@ npm install
 
 ### Compiles and hot-reloads for development
 ```
+cd client
 npm run serve
+```
+
+### Compiles server (server.js)
+```
+cd server
+nodemon .
 ```
 
 ### Compiles and minifies for production

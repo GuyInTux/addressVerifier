@@ -8,7 +8,7 @@
       justify-content: center;
     "
   >
-    <h2>Upload Your Image/ PDF for Verification</h2>
+    <h2>Upload Your Documents for Verification</h2>
     <h2 v-if="errorMsg" style="color: red">{{ errorMsg }}</h2>
     <div style="display: flex; align-items: center">
       <button
@@ -26,12 +26,12 @@
     </button>
     <div id="preview" style="width: 500px; height: 750px">
       <img
-        v-if="fileType == 'image'"
+        v-if="fileType === 'image'"
         :src="fileUrl"
         style="margin-top: 30px; max-width: 100%; max-height: 100%"
       />
       <embed
-        v-else-if="fileType == 'pdf'"
+        v-else-if="fileType === 'pdf'"
         :src="fileUrl"
         type="application/pdf"
         style="width: 100%; height: 100%"
@@ -62,29 +62,42 @@ export default {
       this.$refs.fileUpload.click();
     },
     onFileChange(e) {
-      const file = e.target.files[0];
-      const allowedFormats = ["jpg", "jpeg", "png", "webp", "pdf"];
-      const maxSize = 50 * 1024 * 1024; // 50MB in bytes
+      // creates a FormData object, appends the file to it and send it to server using 'fetch'
 
-      if (file.size > maxSize) {
-        this.errorMsg = "File size exceeds 50MB limit.";
-        this.fileUrl = null;
-        this.fileType = null;
-        this.fileName = null;
-      } else if (
-        !allowedFormats.includes(file.name.split(".").pop().toLowerCase())
-      ) {
-        this.errorMsg =
-          "File format not supported. Please upload jpg, jpeg, png, webp or pdf files only.";
-        this.fileUrl = null;
-        this.fileType = null;
-        this.fileName = null;
-      } else {
-        this.errorMsg = null;
-        this.fileUrl = URL.createObjectURL(file);
-        this.fileType = file.type.split("/")[0];
-        this.fileName = file.name;
-      }
+      const file = e.target.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      fetch("http://localhost:3000/upload", {
+        // returns a promise whether successful or not, this serve handles the uploader
+        method: "POST",
+        body: formData,
+      })
+        .then((response) => {
+          // Throws error text if response is not ok
+          if (!response.ok) {
+            console.log(response.statusText);
+            throw new Error(
+                "Please use a valid PDF."
+            );
+          }
+          return response.text();
+        })
+        .then((text) => {
+          console.log(text);
+          this.setFileProperties(file);
+        })
+        .catch((error) => {
+          // catches and logs any errors
+          console.error("Error", error);
+          this.errorMsg = error.message;
+        });
+    },
+    setFileProperties(file) {
+      this.errorMsg = null;
+      this.fileUrl = URL.createObjectURL(file);
+      this.fileType = file.type.split("/")[0];
+      this.fileName = file.name;
     },
     removeFile() {
       this.fileUrl = null;
