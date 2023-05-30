@@ -7,7 +7,6 @@ const pdfParse = require('pdf-parse');
 router.use(fileUpload());
 
 router.post("/", (req, res) => {
-  // console.log('HI');
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send("No files were uploaded.");
   }
@@ -17,12 +16,13 @@ router.post("/", (req, res) => {
 
   // Attempt to parse the file as a PDF
   pdfParse(uploadedFile.data)
-  .then(() => {
-    res.send("File uploaded successfully!");
-  })
-  .catch(err => {
-      res.status(400).send("Invalid PDF file format."); 
-  });
-})
+    .then(() => {
+      res.send("File uploaded successfully!");
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(400).send("Invalid PDF file format.");
+    });
+});
 
 module.exports = router;

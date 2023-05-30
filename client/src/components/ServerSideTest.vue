@@ -90,7 +90,7 @@ export default {
         .catch((error) => {
           // catches and logs any errors
           console.error("Error", error);
-          this.errorMsg = error.message;
+          this.errorMsg = error.message; //prints fail to fetch if there is an unhandled
         });
     },
     setFileProperties(file) {

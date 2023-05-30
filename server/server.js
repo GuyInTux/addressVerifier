@@ -2,9 +2,9 @@
 // Note that file uploads will be handled by express-fileupload
 // Run 'npm install express-fileupload' to install.
 
-const cors = require('cors');
-const express = require('express');
-const uploadRoute = require('./upload.js');
+const cors = require('cors'); // allows cross-origin requests
+const express = require('express'); // web framework for node.js
+const uploadRoute = require('./upload.js'); // import upload.js that handles file uploads and validation
 
 const app = express();
 
